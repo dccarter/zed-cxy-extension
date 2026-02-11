@@ -1,0 +1,19 @@
+id = "cxy"
+name = "Cxy"  
+description = "Syntax highlighting for Cxy programming language"
+version = "0.1.0"
+schema_version = 1
+
+[[language]]
+name = "Cxy"
+scope = "source.cxy"
+file_types = ["cxy"] 
+comment_tokens = ["//"]
+block_comment_tokens = [
+  { start = "/*", end = "*/" }
+]
+brackets = [
+  { start = "{", end = "}", close = true, newline = true },
+  { start = "[", end = "]", close = true, newline = true },
+  { start = "(", end = ")", close = true, newline = true },
+]
