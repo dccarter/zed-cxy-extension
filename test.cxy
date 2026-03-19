@@ -1,0 +1,494 @@
+module test
+
+// ============================================================================
+// Package & Exports
+// ============================================================================
+
+package mypackage
+
+export { Point, Color } from "./shapes.cxy"
+export "./utils.cxy"
+
+// ============================================================================
+// Comments
+// ============================================================================
+
+// This is a line comment
+/* This is a block comment */
+
+// ============================================================================
+// Module & Imports
+// ============================================================================
+
+import "stdlib/vector.cxy"
+import "stdlib/hash.cxy" as hash
+import { HashMap, HashSet } from "stdlib/hash.cxy"
+import "stdlib.h" as libc
+import plugin "jsonrpc" as jsonrpc
+import test "stdlib/testutils.cxy"
+##if defined TESTING {
+    import test { Assert } from "stdlib/assert.cxy"
+}
+##if defined ENABLE_LOGGING {
+}
+#if defined UNROLL {
+}
+// ============================================================================
+// Macros
+// ============================================================================
+
+macro DEFAULT_SIZE = 16`u64
+macro MAX_VALUE = 1000`i32
+macro SQUARE(x) = (x! * x!)
+macro DEBUG_LOG(msg) = println(msg!)
+
+// ============================================================================
+// Type aliases
+// ============================================================================
+
+type IntVector = Vector[i32]
+type StringMap = HashMap[String, String]
+pub type Callback = func(i32) -> void
+
+// ============================================================================
+// Exceptions
+// ============================================================================
+
+pub exception ParseError(msg: String) => msg != null ? msg.str() : ""
+pub exception IOError(msg: String) => msg != null ? msg.str() : ""
+pub exception ValueError(value: i32) => f"invalid value: {value}"
+pub exception IDError(id: i32, _msg: String = null) {
+   if _msg == null {
+      _msg = f"Invalid {id}"
+   }
+   return _msg.str()
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+pub enum Status : i32 {
+    @str("Success")
+    Success = 0,
+    @str("Error")
+    Error = 1,
+    @str("Pending")
+    Pending = 2
+}
+
+pub enum Color {
+    Red,
+    Green,
+    Blue
+}
+
+// ============================================================================
+// Structs
+// ============================================================================
+
+// Bit field syntax
+struct Flags {
+    active:   1 : i32 = 0;
+    mode:     2 : i32 = 0;
+    priority: 4 : i32 = 0;
+}
+
+// Variadic generic parameters
+struct All[...Members] {}
+struct Fancy[U, ...Others] {}
+// type Transformed[...T] = All[...T]  // TODO: spread in generic arguments not yet supported
+
+// &. operator overload
+struct Optional[T] {
+    - _val: T;
+
+    func `init`(val: T) {
+        _val = &&val
+    }
+
+    @inline
+    func `&.`() => &_val
+}
+
+struct Point {
+    x: f64 = 0.0;
+    y: f64 = 0.0;
+
+    func `init`(x: f64, y: f64) {
+        this.x = x
+        this.y = y
+    }
+
+    const func `==`(other: &const Point) => x == other.x && y == other.y
+
+    const func `+`(other: &const Point) => Point(x + other.x, y + other.y)
+
+    const func `str`(os: &OutputStream) {
+        os << "(" << x << ", " << y << ")"
+    }
+
+    const func `hash`() => x * 31.0 + y
+}
+
+struct GenericContainer[T] {
+    - _data: T
+    - _size: u64 = 0;
+
+    func `init`(data: T) {
+        _data = &&data
+    }
+
+    @inline
+    const func size() => _size
+
+    @inline
+    const func empty() => _size == 0
+}
+
+// ============================================================================
+// Classes
+// ============================================================================
+
+pub class Animal {
+    - _name: String = null;
+    - _age: i32 = 0;
+
+    func `init`(name: String, age: i32 = 0) {
+        _name = &&name
+        _age = age
+    }
+
+    func `deinit`() {
+        delete _name
+    }
+
+    virtual func speak(): void {
+        println(f"{_name} makes a sound")
+    }
+
+    @inline
+    const func name() => &_name
+
+    @inline
+    const func age() => _age
+}
+
+pub class Dog: Animal {
+    - _breed: String = null;
+
+    func `init`(name: String, breed: String) {
+        // super.`init`(&&name)  // TODO: super.`operator_name` not yet supported
+        _breed = &&breed
+    }
+
+    @override
+    func speak(): void {
+        println(f"{name()} barks!")
+    }
+
+    const func breed() => &_breed
+}
+
+// ============================================================================
+// Functions
+// ============================================================================
+
+// Basic function
+pub func add(a: i32, b: i32): i32 {
+    return a + b
+}
+
+// Expression function
+func multiply(a: i32, b: i32) => a * b
+
+// Generic function
+func swap[T](a: &T, b: &T) {
+    var tmp = &&a
+    a = &&b
+    b = &&tmp
+}
+
+// Async function
+async func fetchData(url: string): String {
+    // async body
+    return String(url)
+}
+
+// Variadic function
+func printAll(...args: auto) {
+    #for (const arg: args) {
+        println(#{arg})
+    }
+}
+
+// Function that can raise
+func divide(a: i32, b: i32): !i32 {
+    if (b == 0)
+        raise ValueError(b)
+    return a / b
+}
+
+// Function with typed literals
+func typedLiterals() {
+    var x = 10`i32
+    var y = 3.14`f32
+    var c = 'a'`char
+    var big = 0xFF`u64
+    var bits = 0b1010`u8
+}
+
+// ============================================================================
+// Control Flow
+// ============================================================================
+
+func controlFlow() {
+    var i: i32 = 0
+    var flag: bool = true
+
+    // if with no parens
+    if flag {
+        println("flag is set")
+    }
+
+    // if / else if / else
+    if (i > 0) {
+        println("positive")
+    } else if (i < 0) {
+        println("negative")
+    } else {
+        println("zero")
+    }
+
+    // while loop
+    while (i < 10) {
+        i++
+    }
+
+    // infinite while with break
+    while {
+        if (flag) break
+    }
+
+    // for loop with range — no parens
+    for j: 0..10 {
+        println(f"j = {j}")
+    }
+
+    // for loop with range — parens
+    for (const j: 0..10) {
+        println(f"j = {j}")
+    }
+
+    // for loop with index — no parens
+    var items = Vector[i32]()
+    for item, idx in items {
+        println(f"[{idx}] = {item}")
+    }
+
+    // for loop with index — parens
+    for (const item, idx: items) {
+        println(f"[{idx}] = {item}")
+    }
+
+    // switch — no parens
+    switch i {
+        0 => println("zero")
+        1, 2 => println("one or two")
+        case 3 => println("three")
+        ... => println("other")
+    }
+
+    // switch — parens
+    switch (i) {
+        case 0 => println("zero")
+        case 1, 2 => println("one or two")
+        3, 6 => println("Multiples of 3")
+        default => println("other")
+    }
+
+    // match — no parens
+    var val: i32 | String = 42`i32
+    match val {
+        i32 as n => println(f"int: {n}")
+        String as s => println(f"str: {s}")
+        ... => {}
+    }
+
+    // match — parens with case keyword
+    match (val) {
+        case i32 as n => println(f"int: {n}")
+        case String as s => println(f"str: {s}")
+        else => {}
+    }
+
+    // defer
+    var f = openFile("test.txt")
+    defer f.close()
+
+    // catch
+    var result = divide(10, 0) catch { return }
+    var safe = divide(10, 2) catch 0
+}
+
+// ============================================================================
+// Pointers & References
+// ============================================================================
+
+func memOps() {
+    var x: i32 = 42
+    var ptr: ^i32 = ptrof x
+    var ref: &i32 = &x
+    var cptr: ^const char = "hello"
+
+    // pointer indexing
+    var arr: ^i32 = <^i32>__calloc(10`u64)
+    arr.[0] = 1
+    arr.[1] = 2
+    free(arr !: ^void)
+
+    // move semantics
+    var a = String("hello")
+    var b = &&a
+
+    // &. operator usage
+    var opt = Optional[String](String("hello"))
+    opt&.size()
+}
+
+// ============================================================================
+// Compile-time
+// ============================================================================
+
+func compileTimeExample[T]() {
+    #const isNum = T.isNumber
+    #if (T.isNumber) {
+        return 0
+    } else {
+        return null
+    }
+}
+
+func comptimeFor[T](val: T) {
+    #for (const member: T.members) {
+        println(#{member.name})
+    }
+}
+
+// ============================================================================
+// Lambdas & Closures
+// ============================================================================
+
+func lambdaExamples() {
+    var add = (a: i32, b: i32): i32 => a + b
+    var square = (x: i32) => x * x
+    var greet = (name: string) => {
+        println(f"Hello, {name}!")
+    }
+
+    // passing lambda
+    var nums = Vector[i32]()
+    nums.push(1)
+    nums.push(2)
+    nums.push(3)
+    var doubled = nums.map((x: i32) => x * 2)
+}
+
+// ============================================================================
+// String interpolation
+// ============================================================================
+
+func strings() {
+    var name = "world"
+    var count: i32 = 42
+    var msg = f"Hello, {name}! Count = {count}"
+    var nested = f"result = {add(1, 2)}"
+}
+
+// ============================================================================
+// Generics
+// ============================================================================
+
+func genericExample() {
+    var vec = Vector[i32]()
+    vec.push(10)
+    vec.push(20)
+    vec.push(30)
+
+    var map = HashMap[String, i32]()
+    map.insert(String("key"), 100)
+
+    var opt: i32? = null
+    if (!!opt) {
+        println(f"value: {opt}")
+    }
+}
+
+// ============================================================================
+// Attributes
+// ============================================================================
+
+@inline
+func inlined(): i32 => 42
+
+@[inline, static]
+func inlinedStatic(): i32 => 99
+
+// ============================================================================
+// Tests
+// ============================================================================
+
+test "add function" {
+    ok!(add(1, 2) == 3)
+    ok!(add(-1, 1) == 0)
+    ok!(add(0, 0) == 0)
+}
+
+test "multiply function" {
+    ok!(multiply(3, 4) == 12)
+    ok!(multiply(0, 100) == 0)
+}
+
+test "Point struct" {
+    var p1 = Point(1.0, 2.0)
+    var p2 = Point(3.0, 4.0)
+    var p3 = p1 + p2
+    ok!(p3.x == 4.0)
+    ok!(p3.y == 6.0)
+    ok!(p1 == Point(1.0, 2.0))
+}
+
+test "GenericContainer" {
+    var c = GenericContainer[i32](42`i32)
+    ok!(c.empty())
+}
+
+test "Vector usage" {
+    var vec = Vector[i32]()
+    vec.push(1)
+    vec.push(2)
+    vec.push(3)
+    ok!(vec.size() == 3)
+    ok!(vec.pop() == 3)
+    ok!(vec.size() == 2)
+}
+
+test "exception handling" {
+    var result = divide(10, 0) catch { return }
+    var ok = divide(10, 2) catch 0
+    ok!(ok == 5)
+}
+
+test {
+    // anonymous test
+    var x: i32 = 10
+    var y: i32 = 20
+    ok!(x + y == 30)
+    var x: i32 = 42
+    #const T = #(bool, string, String)
+    #const Refs  = #`T as M, i => &M`
+    #const Strs  = #`T as M, i => M, M.isString`
+    #const Reverse = #`T as M, i => typeat!(T, T.membersCount - i)`
+    #const isInt = x is #i32
+    #const MyT   = #i32
+}

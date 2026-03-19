@@ -1,8 +1,12 @@
+; ===========================================================================
 ; Comments
+; ===========================================================================
 (line_comment) @comment
 (block_comment) @comment
 
+; ===========================================================================
 ; Keywords
+; ===========================================================================
 [
   "func"
   "var"
@@ -11,24 +15,25 @@
   "struct"
   "class"
   "enum"
-  "interface"
   "module"
+  "package"
+  "plugin"
   "import"
+  "export"
   "from"
   "as"
   "pub"
   "extern"
   "native"
   "async"
-  "await"
-  "defer"
-  "unsafe"
+  "virtual"
   "macro"
   "test"
-  "opaque"
-  "virtual"
   "exception"
-  "asm"
+  "delete"
+  "ptrof"
+  "launch"
+  "is"
 ] @keyword
 
 ; Control flow
@@ -47,225 +52,166 @@
   "return"
   "raise"
   "catch"
+  "defer"
+  "discard"
 ] @keyword.control
 
-; Storage/type keywords
+; Compile-time keywords
 [
-  "void"
-  "bool"
-  "char"
-  "string"
-  "__string"
-  "range"
-  "auto"
-] @type.builtin
-
-; Numeric types
-[
-  "i8" "i16" "i32" "i64"
-  "u8" "u16" "u32" "u64"
-  "f32" "f64"
-  "time_t"
-] @type.builtin
-
-; Boolean literals
-[
-  "true"
-  "false"
-  "null"
-] @constant.builtin
-
-; Special identifiers
-[
-  "this"
-  "This"
-  "super"
+  "#if"
+  "##if"
+  "#for"
+  "#const"
   "defined"
-] @variable.builtin
+] @keyword.directive
 
-; String literals
-(string_literal) @string
-(char_literal) @character
-
-; Numeric literals
-(integer_literal) @number
-(float_literal) @number.float
-
-; Identifiers
-(identifier) @variable
-
-; Function definitions and calls
-(function_declaration
-  name: (identifier) @function)
-(function_call
-  function: (identifier) @function)
-
-; Type names
-(type_identifier) @type
-(primitive_type) @type.builtin
-
-; Struct/class/enum names
-(struct_declaration
-  name: (identifier) @type)
-(class_declaration
-  name: (identifier) @type)
-(enum_declaration
-  name: (identifier) @type)
-
-; Field names
-(field_declaration
-  name: (identifier) @property)
-(field_expression
-  field: (identifier) @property)
-
-; Method calls
-(method_call
-  method: (identifier) @function.method)
-
-; Generic type parameters
-(type_parameter (identifier) @type.parameter)
-(generic_type
-  name: (identifier) @type)
-
-; Attributes and annotations
-(attribute) @attribute
-(annotation) @attribute
-
-; Preprocessor directives
-(preprocessor_directive) @preproc
-(macro_invocation) @function.macro
-
-; Compile-time expressions
-(comptime_expression) @keyword.directive
-(comptime_block) @keyword.directive
-
-; Operators
+; Visibility / modifiers
 [
-  "+"
-  "-"
-  "*"
-  "/"
-  "%"
-  "="
-  "+="
-  "-="
-  "*="
-  "/="
-  "%="
-  "&="
-  "|="
-  "^="
-  "<<="
-  ">>="
-  "=="
-  "!="
-  "<"
-  ">"
-  "<="
-  ">="
-  "&&"
-  "||"
-  "!"
-  "&"
-  "|"
-  "^"
-  "~"
-  "<<"
-  ">>"
-  "++"
-  "--"
-  "?"
-  ":"
-  "=>"
-  ".."
-  "..."
-  "@"
-  "#"
-  "##"
-  "#."
-  "!:"
-  "!!"
-  "??"
-  "?."
-] @operator
+  "pub"
+  "extern"
+  "native"
+  "virtual"
+] @keyword.modifier
 
-; Punctuation
+; Memory / async
 [
-  "("
-  ")"
-  "["
-  "]"
-  "{"
-  "}"
-  ";"
-  ","
-  "."
-] @punctuation.delimiter
-
-; Special punctuation for templates/generics
-[
-  "#{"
-  ".["
-] @punctuation.special
-
-; Error handling
-"catch" @keyword.control.exception
-"raise" @keyword.control.exception
-"exception" @keyword.control.exception
-
-; Async/await
-"async" @keyword.coroutine
-"await" @keyword.coroutine
-
-; Memory management
-[
-  "defer"
-  "unsafe"
+  "async"
+  "launch"
   "ptrof"
-  "__copy"
+  "delete"
 ] @keyword.storage
 
-; Visibility modifiers
-"pub" @keyword.modifier
-"extern" @keyword.modifier
-"native" @keyword.modifier
-"virtual" @keyword.modifier
-"opaque" @keyword.modifier
+; ===========================================================================
+; Types
+; ===========================================================================
+(primitive_type) @type.builtin
 
-; Test keyword
-"test" @keyword.directive
+(struct_declaration name: (identifier) @type)
+(class_declaration  name: (identifier) @type)
+(enum_declaration   name: (identifier) @type)
+(type_declaration   name: (identifier) @type)
+(named_type)        @type
+(generic_type name: (identifier) @type)
+(type_parameter name: (identifier) @type.parameter)
 
-; Import statements
-(import_declaration
-  "import" @keyword.import)
-(import_declaration
-  "from" @keyword.import)
-(import_declaration
-  "as" @keyword.import)
+; ===========================================================================
+; Declarations
+; ===========================================================================
 
-; Module declarations
+; Function names
+(function_declaration
+  name: (identifier) @function)
+(expression_function_declaration
+  name: (identifier) @function)
+
+; Operator overload names  e.g. `init`, `==`
+(function_declaration
+  name: (operator_name) @function.special)
+(expression_function_declaration
+  name: (operator_name) @function.special)
+
+; Module
 (module_declaration
-  "module" @keyword.import
   name: (identifier) @module)
 
-; Escape sequences in strings
-(escape_sequence) @string.escape
+; Enum variants
+(enum_variant name: (identifier) @constant)
 
-; Field access with private marker
-(field_declaration
-  name: (identifier) @property.private
-  (#match? @property.private "^-"))
+; Field declarations
+(field_declaration name: (identifier) @property)
 
-; Constants (ALL_CAPS identifiers)
+; Type alias inside struct/class  (type elementType = T)
+(type_alias_member name: (identifier) @type)
+
+; Annotation member  (`noComparator = true)
+(annotation_member) @attribute
+
+; ===========================================================================
+; Calls & field access
+; ===========================================================================
+(call_expression
+  function: (identifier) @function.call)
+(call_expression
+  function: (field_expression field: (identifier) @function.method))
+(call_expression
+  function: (pointer_field_expression field: (identifier) @function.method))
+
+(field_expression      field: (identifier) @property)
+(pointer_field_expression field: (identifier) @property)
+
+; Macro invocations  e.g. ok!(), sizeof!()
+(macro_invocation name: (identifier) @function.macro)
+
+; ===========================================================================
+; Variables & parameters
+; ===========================================================================
+(parameter  name: (identifier) @variable.parameter)
+(lambda_parameter name: (identifier) @variable.parameter)
+
+; Special built-in identifiers
+((identifier) @variable.builtin
+  (#match? @variable.builtin "^(this|super)$"))
+
+(this_literal) @variable.builtin
+(super_literal) @variable.builtin
+
+; Constants — ALL_CAPS
 ((identifier) @constant
- (#match? @constant "^[A-Z][A-Z_0-9]*$"))
+  (#match? @constant "^[A-Z][A-Z0-9_]+$"))
 
-; Generic constraints
-"where" @keyword.control
+(identifier) @variable
 
-; Pattern matching
-"match" @keyword.control.conditional
-"case" @keyword.control.conditional
+; ===========================================================================
+; Literals
+; ===========================================================================
+(string_literal)       @string
+(string_interpolation) @string.special
+(char_literal)         @string
+(integer_literal)      @number
+(float_literal)        @number.float
+(boolean_literal)      @constant.builtin
+(null_literal)         @constant.builtin
 
-; Inline assembly
-"asm" @keyword.directive
+; ===========================================================================
+; Attributes  @inline, @[prop, inline]
+; ===========================================================================
+(attribute_declaration) @attribute
+(attribute_item name: (identifier) @attribute)
+
+
+
+
+; ===========================================================================
+; Comptime expand #{ }
+; ===========================================================================
+(comptime_expand) @punctuation.special
+
+; ===========================================================================
+; Typeinfo & Tuple Transform
+; ===========================================================================
+
+; #T, #i32, #(bool, i32)  — typeinfo prefix
+(typeinfo_expression) @keyword.directive
+
+; #`T as M, i => ...`  — tuple type transformation
+(tuple_transform_expression) @keyword.directive
+
+; ===========================================================================
+; Operators
+; ===========================================================================
+[
+  "+"  "-"  "*"  "/"  "%"
+  "="  "+=" "-=" "*=" "/=" "%="
+  "&=" "|=" "^=" "<<=" ">>="
+  "==" "!=" "<"  ">"  "<=" ">="
+  "&&" "||" "!"  "&"  "|"  "^"  "~"
+  "<<" ">>" "++" "--"
+  "=>" ".." "!:" "as"
+  "&&"
+] @operator
+
+; ===========================================================================
+; Punctuation
+; ===========================================================================
+[ "(" ")" "[" "]" "{" "}" ] @punctuation.bracket
+[ ";" "," "." ":"          ] @punctuation.delimiter

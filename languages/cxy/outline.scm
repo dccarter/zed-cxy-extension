@@ -1,53 +1,46 @@
-; Function declarations
+; Package
+(package_declaration
+  name: (identifier) @name) @item
+
+; Functions
 (function_declaration
   name: (identifier) @name) @item
 
-; Struct declarations
+(expression_function_declaration
+  name: (identifier) @name) @item
+
+; Structs
 (struct_declaration
   name: (identifier) @name) @item
 
-; Class declarations
+; Classes
 (class_declaration
   name: (identifier) @name) @item
 
-; Enum declarations
+; Enums
 (enum_declaration
   name: (identifier) @name) @item
 
-; Type declarations
+; Type aliases
 (type_declaration
   name: (identifier) @name) @item
 
-; Exception declarations
+; Exceptions
 (exception_declaration
   name: (identifier) @name) @item
 
-; Module declarations
+; Modules
 (module_declaration
   name: (identifier) @name) @item
 
-; Test declarations
+; Tests
 (test_declaration
-  name: (string_literal)? @name) @item
+  name: (string_literal) @name) @item
 
-; Macro declarations
+; Macros
 (macro_declaration
   name: (identifier) @name) @item
 
-; Variable declarations (only top-level const)
+; Top-level constants
 (variable_declaration
-  "const"
-  name: (identifier) @name) @item
-
-; Method declarations within structs/classes
-(struct_body
-  (function_declaration
-    name: (identifier) @name) @item)
-
-; Field declarations
-(field_declaration
-  name: (identifier) @name) @item
-
-; Enum variants
-(enum_variant
   name: (identifier) @name) @item

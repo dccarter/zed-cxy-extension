@@ -1,0 +1,14 @@
+name = "Cxy"
+grammar = "cxy"
+path_suffixes = ["cxy"]
+line_comments = ["// "]
+block_comment_tokens = { start = "/*", end = "*/" }
+autoclose_before = "])"
+
+brackets = [
+  { start = "{", end = "}", close = true, newline = true },
+  { start = "[", end = "]", close = true, newline = true },
+  { start = "(", end = ")", close = true, newline = true },
+  { start = "#{", end = "}", close = true, newline = false },
+  { start = ".[", end = "]", close = true, newline = false },
+]
