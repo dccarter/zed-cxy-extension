@@ -1,0 +1,15 @@
+{
+  "grammars": [
+    {
+      "name": "cxy",
+      "path": ".",
+      "scope": "source.cxy",
+      "file-types": ["cxy"],
+      "external-files": ["src/scanner.c"]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT"
+  }
+}
