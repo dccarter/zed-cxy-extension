@@ -2,12 +2,14 @@
 node_modules/
 package-lock.json
 
-# Tree-sitter build artifacts
-src/parser.c
-src/grammar.json
-src/node-types.json
-src/tree_sitter/
-*.wasm
+# Tree-sitter generated files (keep only grammar.js and scanner.c)
+grammars/cxy/src/parser.c
+grammars/cxy/src/grammar.json
+grammars/cxy/src/node-types.json
+grammars/cxy/src/tree_sitter/
+
+# Built WASM files
+grammars/*.wasm
 
 # Build directories
 build/
