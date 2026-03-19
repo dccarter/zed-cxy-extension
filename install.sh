@@ -228,7 +228,7 @@ fetch_extension() {
     TEMP_DIR=$(mktemp -d)
     cd "$TEMP_DIR"
 
-    if ! git clone --depth 1 "$REPO_URL" "$EXTENSION_NAME" 2>&1; then
+    if ! git clone --depth 1 "$REPO_URL" "$EXTENSION_NAME"; then
         die "Failed to clone repository from $REPO_URL"
     fi
 
@@ -241,31 +241,39 @@ build_grammar() {
 
     cd "$TEMP_DIR/$EXTENSION_NAME/grammars/cxy"
 
+    # Check package.json exists
+    if [ ! -f "package.json" ]; then
+        die "package.json not found in grammars/cxy"
+    fi
+
     # Install npm dependencies
-    if ! npm install --silent 2>&1; then
-        die "Failed to install npm dependencies"
+    info "Installing npm dependencies..."
+    if ! npm install; then
+        die "Failed to install npm dependencies. Check your npm/node installation."
     fi
     success "Dependencies installed"
 
     # Generate the parser
+    info "Generating parser..."
     if [ "$USE_NPX" = "true" ]; then
-        if ! npx tree-sitter generate 2>&1; then
+        if ! npx tree-sitter generate; then
             die "Failed to generate tree-sitter parser"
         fi
     else
-        if ! tree-sitter generate 2>&1; then
+        if ! tree-sitter generate; then
             die "Failed to generate tree-sitter parser"
         fi
     fi
     success "Parser generated"
 
     # Build the WASM file
+    info "Building WASM grammar..."
     if [ "$USE_NPX" = "true" ]; then
-        if ! npx tree-sitter build --wasm -o ../cxy.wasm 2>&1; then
+        if ! npx tree-sitter build --wasm -o ../cxy.wasm; then
             die "Failed to build WASM grammar"
         fi
     else
-        if ! tree-sitter build --wasm -o ../cxy.wasm 2>&1; then
+        if ! tree-sitter build --wasm -o ../cxy.wasm; then
             die "Failed to build WASM grammar"
         fi
     fi
