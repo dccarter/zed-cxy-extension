@@ -1,11 +1,11 @@
 # CXY Language Extension for Zed
 
-Syntax highlighting and code navigation for the [CXY programming language](https://github.com/dccarter/cxy) in Zed.
+Syntax highlighting and code navigation for the [CXY programming language](https://github.com/cxy-lang/cxy) in Zed.
 
 ## Quick Install
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/cxy-lang/zed-cxy-extension/main/install.sh | sh
 ```
 
 **Requirements:** git, node, npm
@@ -14,7 +14,7 @@ curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/inst
 
 1. **Clone & build:**
    ```bash
-   git clone https://github.com/dccarter/zed-cxy-extension.git
+   git clone https://github.com/cxy-lang/zed-cxy-extension.git
    cd zed-cxy-extension/grammars/cxy
    npm install
    npx tree-sitter generate
@@ -38,7 +38,7 @@ curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/inst
 ## Uninstall
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/install.sh | sh -s -- --uninstall
+curl -sSL https://raw.githubusercontent.com/cxy-lang/zed-cxy-extension/main/install.sh | sh -s -- --uninstall
 ```
 
 ## Troubleshooting
@@ -49,5 +49,5 @@ curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/inst
 
 ## Links
 
-- [CXY Language](https://github.com/dccarter/cxy)
-- [Report Issues](https://github.com/dccarter/zed-cxy-extension/issues)
+- [CXY Language](https://github.com/cxy-lang/cxy)
+- [Report Issues](https://github.com/cxy-lang/zed-cxy-extension/issues)

@@ -1,6 +1,6 @@
 #!/bin/sh
 # CXY Zed Extension Installer
-# Usage: curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/install.sh | sh
+# Usage: curl -sSL https://raw.githubusercontent.com/cxy-lang/zed-cxy-extension/main/install.sh | sh
 #
 # This script installs the CXY language extension for Zed editor.
 # It works on both Linux and macOS.
@@ -25,7 +25,7 @@ else
 fi
 
 # Configuration
-REPO_URL="https://github.com/dccarter/zed-cxy-extension.git"
+REPO_URL="https://github.com/cxy-lang/zed-cxy-extension.git"
 EXTENSION_NAME="cxy"
 TEMP_DIR=""
 
@@ -355,7 +355,7 @@ print_success_message() {
     echo "  $INSTALL_DIR"
     echo ""
     echo "For issues or feedback, visit:"
-    echo "  https://github.com/dccarter/zed-cxy-extension/issues"
+    echo "  https://github.com/cxy-lang/zed-cxy-extension/issues"
     echo ""
 }
 
@@ -406,7 +406,7 @@ main() {
             echo "  --uninstall, -u   Uninstall the extension"
             echo ""
             echo "Installation:"
-            echo "  curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/install.sh | sh"
+            echo "  curl -sSL https://raw.githubusercontent.com/cxy-lang/zed-cxy-extension/main/install.sh | sh"
             echo ""
             exit 0
             ;;

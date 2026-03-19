@@ -5,5 +5,5 @@ version = "0.1.0"
 schema_version = 1
 
 [grammars.cxy]
-repository = "https://github.com/dccarter/cxy"
+repository = "https://github.com/cxy-lang/cxy"
 rev = "main"
