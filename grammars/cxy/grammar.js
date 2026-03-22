@@ -795,7 +795,12 @@ module.exports = grammar({
       ),
 
     string_literal: ($) =>
-      token(seq('"', repeat(choice(/[^"\\]/, /\\./)), '"')),
+      choice(
+        // Multiline string with triple quotes (must come first to match greedily)
+        token(seq('"""', repeat(choice(/[^"]/, /"[^"]/, /""[^"]/)), '"""')),
+        // Single-line string
+        token(seq('"', repeat(choice(/[^"\\\n]/, /\\./)), '"')),
+      ),
 
     char_literal: ($) =>
       token(

@@ -403,6 +403,13 @@ func strings() {
     var count: i32 = 42
     var msg = f"Hello, {name}! Count = {count}"
     var nested = f"result = {add(1, 2)}"
+
+    // Multiline string
+    var multiline = """
+Hello
+World
+This is a multiline string.
+"""
 }
 
 // ============================================================================
