@@ -410,6 +410,20 @@ Hello
 World
 This is a multiline string.
 """
+
+insert(
+    "Getting Started with Cxy",
+    "getting-started-with-cxy",
+    "A hands-on introduction to the Cxy programming language: syntax, types, and your first program.",
+    """
+    Cxy is a systems-level language that combines the performance of C with modern ergonomics.
+    In this post we walk through installing the toolchain, writing a Hello World, and understanding
+    the module system. By the end you will have a working project and a feel for the language's
+    philosophy: zero-cost abstractions, explicit ownership, and compile-time metaprogramming.
+    """,
+    "Alice Chen",
+    "2025-01-10"
+)
 }
 
 // ============================================================================

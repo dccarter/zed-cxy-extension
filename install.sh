@@ -398,15 +398,50 @@ main() {
             uninstall_extension
             exit 0
             ;;
+        --dev|-d)
+            detect_os
+            detect_arch
+            get_zed_extensions_dir
+
+            INSTALL_DIR="$ZED_EXTENSIONS_DIR/installed/$EXTENSION_NAME"
+            SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+            info "Installing in dev mode (symlink)..."
+            info "Source: $SOURCE_DIR"
+            info "Target: $INSTALL_DIR"
+            echo ""
+
+            mkdir -p "$ZED_EXTENSIONS_DIR/installed"
+
+            if [ -d "$INSTALL_DIR" ] || [ -L "$INSTALL_DIR" ]; then
+                warn "Removing existing installation..."
+                rm -rf "$INSTALL_DIR"
+            fi
+
+            ln -s "$SOURCE_DIR" "$INSTALL_DIR"
+            success "Symlinked: $SOURCE_DIR -> $INSTALL_DIR"
+            echo ""
+            echo "Changes to your source directory are picked up after reloading"
+            echo "extensions in Zed (Cmd+Shift+P -> 'zed: reload extensions')."
+            echo ""
+            echo "Note: you still need to rebuild the wasm after grammar changes:"
+            echo "  cd grammars/cxy && npx tree-sitter generate && npx tree-sitter build --wasm -o ../cxy.wasm"
+            echo ""
+            exit 0
+            ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --help, -h        Show this help message"
             echo "  --uninstall, -u   Uninstall the extension"
+            echo "  --dev, -d         Dev mode: symlink source dir instead of cloning"
             echo ""
             echo "Installation:"
-            echo "  curl -sSL https://raw.githubusercontent.com/cxy-lang/zed-cxy-extension/main/install.sh | sh"
+            echo "  curl -sSL https://raw.githubusercontent.com/dccarter/zed-cxy-extension/main/install.sh | sh"
+            echo ""
+            echo "Dev mode (from the repo directory):"
+            echo "  ./install.sh --dev"
             echo ""
             exit 0
             ;;
